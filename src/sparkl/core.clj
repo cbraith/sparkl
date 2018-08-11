@@ -23,15 +23,15 @@
   @radius)
 
   ;; Angles
-(def Ax (atom 15))
-(def Ay (atom -15))
-(def Az (atom 90))
+(def Ax (atom (Math/toRadians 15)))
+(def Ay (atom (Math/toRadians -15)))
+(def Az (atom (Math/toRadians 90)))
 
 (defn set-angle
   "Rotates virtual space along y axis if true at given rpm per framrate."
   [angle rpm framerate]
-  (if (< @angle 360)
-    (swap! angle + (/ (/ (* rpm 360.0) 60) framerate))
+  (if (< @angle 400)
+    (swap! angle + (/ (/ (* rpm 400.0) 60) framerate))
     (swap! angle zero)))
 
 (defn screenH [x y z ax ay az h0]
