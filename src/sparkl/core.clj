@@ -2,6 +2,21 @@
   (:require [quil.core :as q :include-macros true]
             [clojure.pprint :as prnt]))
 
+(def radius (atom 1))
+(def inc-radius (atom true))
+(defn toggle [b]
+  (not b))
+(defn set-radius []
+  (if (> @radius 100)
+    (swap! inc-radius toggle)
+    (if (< @radius 1)
+      (swap! inc-radius toggle)))
+
+  (if (true? @inc-radius)
+    (swap! radius inc)
+    (swap! radius dec))
+  @radius)
+
 (defn screenH [x y z ax ay az h0]
   (Math/abs (Math/round (+ (* x (Math/cos ax)) (* y (Math/cos ay)) (* z (Math/cos az)) h0))))
 
@@ -14,15 +29,15 @@
   ;; TODO: parametize z, right now z is 0
   (let [rs (range (+ r 1))
         xs (reduce into (map #(let [delta (Math/round (Math/sqrt (- (Math/pow r 2) (Math/pow % 2))))]
-                                [[(+ x %) (+ y delta) 0]
-                                 [(+ x %) (- y delta) 0]
-                                 [(- x %) (+ y delta) 0]
-                                 [(- x %) (- y delta) 0]]) rs))
+                                [[(+ x %) (+ y delta) 256]
+                                 [(+ x %) (- y delta) 256]
+                                 [(- x %) (+ y delta) 256]
+                                 [(- x %) (- y delta) 256]]) rs))
         ys (reduce into (map #(let [delta (Math/round (Math/sqrt (- (Math/pow r 2) (Math/pow % 2))))]
-                                [[(+ x delta) (+ y %) 0]
-                                 [(+ x delta) (- y %) 0]
-                                 [(- x delta) (+ y %) 0]
-                                 [(- x delta) (- y %) 0]]) rs))]
+                                [[(+ x delta) (+ y %) 256]
+                                 [(+ x delta) (- y %) 256]
+                                 [(- x delta) (+ y %) 256]
+                                 [(- x delta) (- y %) 256]]) rs))]
     (set (reduce into [xs ys]))))
 
 (defn project
@@ -42,8 +57,8 @@
   (q/fill (q/random 255))               ;; Set the fill colour to a random grey
 
   (let [white (q/color 255 255 255)
-        r (+ 10 (rand-int 50))
-        graph (circle (+ r (rand-int (- 512 (* 2 r)))) (+ r (rand-int (- 512 (* 2 r)))) r)]
+        r (set-radius)
+        graph (circle 256 256 r)]
     (q/clear)
     (doseq [[x y] graph]
       (q/set-pixel x y white))))         ;; Draw a point at the center of the screen
