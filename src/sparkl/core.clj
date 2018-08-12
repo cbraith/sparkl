@@ -22,10 +22,14 @@
     (swap! radius dec))
   @radius)
 
+(def originX 256)
+(def originY 256)
+(def origin-length 128)
+
   ;; Angles
 (def Ax (atom (Math/toRadians 15)))
 (def Ay (atom (Math/toRadians -15)))
-(def Az (atom (Math/toRadians 90)))
+(def Az (atom (Math/toRadians 270)))
 
 (defn set-angle
   "Rotates virtual space along y axis if true at given rpm per framrate."
@@ -40,8 +44,16 @@
 (defn screenV [x y z ax ay az v0]
   (Math/abs (Math/round (+ (* x (Math/sin ax)) (* y (Math/sin ay)) (* z (Math/sin az)) v0))))
 
-(defn circle
-  [x y r]
+(defn paraboloid
+  [a b c size]
+  (let [rs (range (- 0 size) size 10)
+        matrix (for [x rs y rs] [x y])
+        ps (map #(let [z (/ (+ (/ (Math/pow (first %) 2) (Math/pow a 2)) (/ (Math/pow (second %) 2) (Math/pow b 2))) c)]
+                   [(first %) (second %) z]) matrix)]
+    ps))
+
+(defn sphere
+  [x y z r]
   ;; draw a circle
   ;; TODO: parametize z, right now z is 0
   (let [rs (range 0 (+ r 1) 20)
@@ -60,28 +72,41 @@
 (defn project
   "Project a collection of 3D points onto 2D screen."
   [points]
-  (let [h0 256 v0 256]
-    (map #(let [[x y z] %]
-            [(screenH x y z @Ax @Ay @Az h0) (screenV x y z @Ax @Ay @Az v0)]) points)))
+  (map #(let [[x y z] %]
+          [(screenH x y z @Ax @Ay @Az originX) (screenV x y z @Ax @Ay @Az originY)]) points))
 
 (defn setup []
   (q/frame-rate framerate)                    ;; Set framerate to 30 FPS
   (q/background 0 0 0))                 ;; Set the background color to
                                       ;; a nice shade of black.
 (defn draw []
-  (q/stroke (q/random 255))             ;; Set the stroke colour to a random grey
-  (q/stroke-weight (q/random 10))       ;; Set the stroke thickness randomly
-  (q/fill (q/random 255))               ;; Set the fill colour to a random grey
+  (q/stroke-weight 1)
+
   (let [white (q/color 255 255 255)
-        r 100
-        graph (project (circle 0 0 r))]
+        ; graph (project (paraboloid 10 10 1 100))]
+        graph (project (sphere 0 0 0 50))]
     (q/clear)
-    (q/set-pixel 256 256 (q/color 0 255 0))
-    (set-angle Ax 0.1 framerate)
+
+    ;; render axis
+    (q/stroke (q/color 191 191 191))
+    (q/line (screenH 0 0 0 @Ax @Ay @Az originX) (screenV 0 0 0 @Ax @Ay @Az originY)
+            (screenH origin-length 0 0 @Ax @Ay @Az originX) (screenV origin-length 0 0 @Ax @Ay @Az originY)) ; x-axis
+
+    (q/stroke (q/color 127 127 127))
+    (q/line (screenH 0 0 0 @Ax @Ay @Az originX) (screenV 0 0 0 @Ax @Ay @Az originY)
+            (screenH 0 origin-length 0 @Ax @Ay @Az originX) (screenV 0 origin-length 0 @Ax @Ay @Az originY)) ; y-axis
+
+    (q/stroke (q/color 63 63 63))
+    (q/line (screenH 0 0 0 @Ax @Ay @Az originX) (screenV 0 0 0 @Ax @Ay @Az originY)
+            (screenH 0 0 origin-length @Ax @Ay @Az originX) (screenV 0 0 origin-length @Ax @Ay @Az originY)) ; z-axis
+
+    (q/set-pixel originX originY (q/color 0 255 0))
+    ; (set-angle Ax 0.1 framerate)
+    ; (set-angle Ay 0.1 framerate)
     (doseq [[x y] graph]
       (q/set-pixel x y white))))         ;; Draw a point at the center of the screen
 
-(q/defsketch example                  ;; Define a new sketch named example
+(q/defsketch quadric                 ;; Define a new sketch named example
              :title "Random circles."    ;; Set the title of the sketch
              :settings #(q/smooth 2)             ;; Turn on anti-aliasing
              :setup setup                        ;; Specify the setup fn
