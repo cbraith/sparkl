@@ -23,13 +23,15 @@
     (swap! radius dec))
   @radius)
 
+(def axis? false)
 (def originX 256)
-(def originY 304)
+(def originY 256)
 (def origin-length 128)
+(def sheet-size 250)
 
   ;; Angles
-(def Ax (atom (Math/toRadians 15)))
-(def Ay (atom (Math/toRadians -15)))
+(def Ax (atom (Math/toRadians 45)))
+(def Ay (atom (Math/toRadians -45)))
 (def Az (atom (Math/toRadians 270)))
 
 (defn set-angle
@@ -40,20 +42,21 @@
     (swap! angle zero)))
 
 (defn screenH [x y z ax ay az h0]
-  (Math/abs (Math/round (+ (* x (Math/cos ax)) (* y (Math/cos ay)) (* z (Math/cos az)) h0))))
+  (Math/round (+ (* x (Math/cos ax)) (* y (Math/cos ay)) (* z (Math/cos az)) h0)))
 
 (defn screenV [x y z ax ay az v0]
-  (Math/abs (Math/round (+ (* x (Math/sin ax)) (* y (Math/sin ay)) (* z (Math/sin az)) v0))))
+  (Math/round (+ (* x (Math/sin ax)) (* y (Math/sin ay)) (* z (Math/sin az)) v0)))
 
 (defn point-cloud
   [a b c size surface]
-  (let [rs (range (- 0 size) size 10)
+  (let [rs (range (- 0 size) size 8)
         matrix (for [x rs y rs] [x y])
-        ps (map #(let [z (surface a b c %)]
-                   [(first %) (second %) z]) matrix)]
+        ps (reduce into (map #(let [z (surface a b c %)]
+                                [[(first %) (second %) z]
+                                 [(first %) (second %) (* -1 z)]]) matrix))]
     ps))
 
-(defn sphere
+(defn circle
   [x y z r]
   ;; draw a circle
   ;; TODO: parametize z, right now z is 0
@@ -84,27 +87,32 @@
   (q/stroke-weight 1)
 
   (let [white (q/color 255 255 255)
-        graph (project (point-cloud 10 12 1 100 s/saddle))]
-        ; graph (project (point-cloud 10 10 1 100 s/paraboloid))]
-        ; graph (project (sphere 0 0 0 50))]
+        graph (project (point-cloud 10 10 1 sheet-size s/paraboloid))]
+        ; graph (project (point-cloud 10 12 1 sheet-size s/saddle))]
+        ; graph (project (point-cloud 6 6 5 sheet-size s/cone))]
+        ; graph (project (point-cloud 6 6 5 sheet-size s/one-sheet))]
+        ; graph (project (point-cloud 6 6 5 sheet-size s/two-sheet))]
+        ; graph (project (point-cloud 70 70 70 sheet-size s/ellipsoid))]
     (q/clear)
 
     ;; render axis
-    (q/stroke (q/color 191 191 191))
-    (q/line (screenH 0 0 0 @Ax @Ay @Az originX) (screenV 0 0 0 @Ax @Ay @Az originY)
-            (screenH origin-length 0 0 @Ax @Ay @Az originX) (screenV origin-length 0 0 @Ax @Ay @Az originY)) ; x-axis
+    (if (true? axis?)
+      (do
+        (q/stroke (q/color 191 191 191))
+        (q/line (screenH 0 0 0 @Ax @Ay @Az originX) (screenV 0 0 0 @Ax @Ay @Az originY)
+                (screenH origin-length 0 0 @Ax @Ay @Az originX) (screenV origin-length 0 0 @Ax @Ay @Az originY)) ; x-axis
 
-    (q/stroke (q/color 127 127 127))
-    (q/line (screenH 0 0 0 @Ax @Ay @Az originX) (screenV 0 0 0 @Ax @Ay @Az originY)
-            (screenH 0 origin-length 0 @Ax @Ay @Az originX) (screenV 0 origin-length 0 @Ax @Ay @Az originY)) ; y-axis
+        (q/stroke (q/color 127 127 127))
+        (q/line (screenH 0 0 0 @Ax @Ay @Az originX) (screenV 0 0 0 @Ax @Ay @Az originY)
+                (screenH 0 origin-length 0 @Ax @Ay @Az originX) (screenV 0 origin-length 0 @Ax @Ay @Az originY)) ; y-axis
 
-    (q/stroke (q/color 63 63 63))
-    (q/line (screenH 0 0 0 @Ax @Ay @Az originX) (screenV 0 0 0 @Ax @Ay @Az originY)
-            (screenH 0 0 origin-length @Ax @Ay @Az originX) (screenV 0 0 origin-length @Ax @Ay @Az originY)) ; z-axis
+        (q/stroke (q/color 63 63 63))
+        (q/line (screenH 0 0 0 @Ax @Ay @Az originX) (screenV 0 0 0 @Ax @Ay @Az originY)
+                (screenH 0 0 origin-length @Ax @Ay @Az originX) (screenV 0 0 origin-length @Ax @Ay @Az originY)))) ; z-axis
 
     (q/set-pixel originX originY (q/color 0 255 0))
-    ; (set-angle Ax 0.1 framerate)
-    ; (set-angle Ay 0.1 framerate)
+    (set-angle Ax 0.1 framerate)
+    (set-angle Ay 0.1 framerate)
     (doseq [[x y] graph]
       (q/set-pixel x y white))))         ;; Draw a point at the center of the screen
 
@@ -118,4 +126,5 @@
 (defn -main
   "I don't do a whole lot ... yet."
   [& args]
-  (prnt/pprint "Rendering..."))
+  ; (prnt/pprint (project (point-cloud 50 50 50 100 s/ellipsoid)))
+  (println "Rendering..."))
