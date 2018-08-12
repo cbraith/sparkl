@@ -1,5 +1,6 @@
 (ns sparkl.core
   (:require [quil.core :as q :include-macros true]
+            [sparkl.surfaces :as s]
             [clojure.pprint :as prnt]))
 
 (defn zero [& args]
@@ -23,7 +24,7 @@
   @radius)
 
 (def originX 256)
-(def originY 256)
+(def originY 304)
 (def origin-length 128)
 
   ;; Angles
@@ -44,11 +45,11 @@
 (defn screenV [x y z ax ay az v0]
   (Math/abs (Math/round (+ (* x (Math/sin ax)) (* y (Math/sin ay)) (* z (Math/sin az)) v0))))
 
-(defn paraboloid
-  [a b c size]
+(defn point-cloud
+  [a b c size surface]
   (let [rs (range (- 0 size) size 10)
         matrix (for [x rs y rs] [x y])
-        ps (map #(let [z (/ (+ (/ (Math/pow (first %) 2) (Math/pow a 2)) (/ (Math/pow (second %) 2) (Math/pow b 2))) c)]
+        ps (map #(let [z (surface a b c %)]
                    [(first %) (second %) z]) matrix)]
     ps))
 
@@ -83,8 +84,9 @@
   (q/stroke-weight 1)
 
   (let [white (q/color 255 255 255)
-        ; graph (project (paraboloid 10 10 1 100))]
-        graph (project (sphere 0 0 0 50))]
+        graph (project (point-cloud 10 12 1 100 s/saddle))]
+        ; graph (project (point-cloud 10 10 1 100 s/paraboloid))]
+        ; graph (project (sphere 0 0 0 50))]
     (q/clear)
 
     ;; render axis
@@ -107,7 +109,7 @@
       (q/set-pixel x y white))))         ;; Draw a point at the center of the screen
 
 (q/defsketch quadric                 ;; Define a new sketch named example
-             :title "Random circles."    ;; Set the title of the sketch
+             :title "Quadric Surfaces."    ;; Set the title of the sketch
              :settings #(q/smooth 2)             ;; Turn on anti-aliasing
              :setup setup                        ;; Specify the setup fn
              :draw draw                          ;; Specify the draw fn
