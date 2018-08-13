@@ -31,8 +31,8 @@
 (def sheet-size 300)
 
 ;; Angles
-(def Ax (atom (Math/toRadians 15)))
-(def Ay (atom (Math/toRadians -15)))
+(def Ax (atom (Math/toRadians 30)))
+(def Ay (atom (Math/toRadians -30)))
 (def Az (atom (Math/toRadians 270)))
 (def orient (atom (Math/toRadians 0)))
 
@@ -120,7 +120,7 @@
                             sphere (point-cloud 300.0 300.0 300.0 sheet-size true s/ellipsoid)
 
                             ; graph (project (point-cloud 10 10 1 sheet-size false s/paraboloid))]
-                            ; graph (project (point-cloud 10 12 1 sheet-size false s/saddle))]
+                            ; graph (project (point-cloud 13 13 13 sheet-size false s/saddle))]
                             ; graph (project (point-cloud 6 6 5 sheet-size true s/cone))]
                             ; graph (project (point-cloud 6 6 5 sheet-size true s/one-sheet))]
         ; graph (project (point-cloud 6 6 5 sheet-size true s/two-sheet))]
