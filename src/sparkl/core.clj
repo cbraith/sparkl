@@ -24,17 +24,21 @@
     (swap! radius dec))
   @radius)
 
-(def axis? false)
+(def axis? true)
 (def originX (/ (q/screen-width) 2))
 (def originY (/ (q/screen-height) 2))
 (def xyz-length 128)
 (def sheet-size 300)
 
 ;; Angles
-(def Ax (atom (Math/toRadians 45)))
-(def Ay (atom (Math/toRadians -45)))
+(def Ax (atom (Math/toRadians 15)))
+(def Ay (atom (Math/toRadians -15)))
 (def Az (atom (Math/toRadians 270)))
 (def orient (atom (Math/toRadians 0)))
+
+(defn copy-sign [val provider]
+  "Return val with sign of provider"
+  (* (/ provider (Math/abs provider) val)))
 
 (defn set-angle
   "Rotates virtual space along y axis if true at given rpm per framrate."
@@ -49,9 +53,11 @@
 (defn screenV [x y z ax ay az v0]
   (Math/round (+ (* x (Math/sin ax)) (* y (Math/sin ay)) (* z (Math/sin az)) v0)))
 
-(defn rotate [[x y] a]
-  (let [h (Math/hypot x y)]
-    [(* (Math/cos a) h) (* (Math/sin a) h)]))
+(defn rotate [[x y] delta]
+  (let [h (Math/hypot x y)
+        a (Math/acos (/ x h))
+        rot (+ a delta)]
+    [(* (Math/cos rot) h) (* (Math/sin rot) h)]))
 
 (defn point-cloud
   [a b c size mirror surface]
@@ -59,9 +65,9 @@
         matrix (for [x rs y rs] [x y])
         ps (reduce into (map #(let [z (surface a b c %)]
                                 (if (true? mirror)
-                                  [[(first %) (second %) z]
-                                   [(first %) (second %) (* -1.0 z)]] ; add mirrored points
-                                  [[(first %) (second %) z]])) matrix))]
+                                  [[(first %) (second %) z] [(* -1 (first %)) (* -1 (second %)) z]
+                                   [(first %) (second %) (* -1.0 z)] [(* -1 (first %)) (* -1 (second %)) (* -1.0 z)]] ; add mirrored points
+                                  [[(first %) (second %) z] [(* -1 (first %)) (* -1 (second %)) z]])) (map #(rotate % @orient) matrix)))]
     ps))
 
 (defn circle
@@ -111,28 +117,27 @@
                             foreground stardust
                             background persimmon
 
-                            sphere (point-cloud 300.0 300.0 300.0 sheet-size true s/ellipsoid)
+                            ; sphere (point-cloud 300.0 300.0 300.0 sheet-size true s/ellipsoid)
 
-                            ; graph (project (point-cloud 10 10 1 sheet-size false s/paraboloid))]
+                            graph (project (point-cloud 10 10 1 sheet-size false s/paraboloid))]
                             ; graph (project (point-cloud 10 12 1 sheet-size false s/saddle))]
                             ; graph (project (point-cloud 6 6 5 sheet-size true s/cone))]
                             ; graph (project (point-cloud 6 6 5 sheet-size true s/one-sheet))]
         ; graph (project (point-cloud 6 6 5 sheet-size true s/two-sheet))]
-                            graph (project sphere)]
+                            ; graph (project sphere)]
                         (q/clear)
-
     ;; render axis
                         (if (true? axis?)
                           (do
-                            (q/stroke (q/color 191 191 191))
+                            (q/stroke snow-day)
                             (q/line (screenH 0 0 0 @Ax @Ay @Az originX) (screenV 0 0 0 @Ax @Ay @Az originY)
                                     (screenH xyz-length 0 0 @Ax @Ay @Az originX) (screenV xyz-length 0 0 @Ax @Ay @Az originY)) ; x-axis
 
-                            (q/stroke (q/color 127 127 127))
+                            (q/stroke umami)
                             (q/line (screenH 0 0 0 @Ax @Ay @Az originX) (screenV 0 0 0 @Ax @Ay @Az originY)
                                     (screenH 0 xyz-length 0 @Ax @Ay @Az originX) (screenV 0 xyz-length 0 @Ax @Ay @Az originY)) ; y-axis
 
-                            (q/stroke (q/color 63 63 63))
+                            (q/stroke fall-foliage)
                             (q/line (screenH 0 0 0 @Ax @Ay @Az originX) (screenV 0 0 0 @Ax @Ay @Az originY)
                                     (screenH 0 0 xyz-length @Ax @Ay @Az originX) (screenV 0 0 xyz-length @Ax @Ay @Az originY)))) ; z-axis
 
@@ -153,5 +158,5 @@
   "I don't do a whole lot ... yet."
   [& args]
   ; (prnt/pprint (map #(rotate % @orient) (point-cloud 10 10 1 sheet-size false s/paraboloid)))
-  (prnt/pprint (point-cloud 10 10 1 sheet-size false s/paraboloid))
+  ; (prnt/pprint (point-cloud 10 10 1 sheet-size false s/paraboloid))
   (println "Rendering..."))
