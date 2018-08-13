@@ -117,14 +117,14 @@
                             foreground stardust
                             background persimmon
 
-                            ; sphere (point-cloud 300.0 300.0 300.0 sheet-size true s/ellipsoid)
+                            sphere (point-cloud 300.0 300.0 300.0 sheet-size true s/ellipsoid)
 
-                            graph (project (point-cloud 10 10 1 sheet-size false s/paraboloid))]
+                            ; graph (project (point-cloud 10 10 1 sheet-size false s/paraboloid))]
                             ; graph (project (point-cloud 10 12 1 sheet-size false s/saddle))]
                             ; graph (project (point-cloud 6 6 5 sheet-size true s/cone))]
                             ; graph (project (point-cloud 6 6 5 sheet-size true s/one-sheet))]
         ; graph (project (point-cloud 6 6 5 sheet-size true s/two-sheet))]
-                            ; graph (project sphere)]
+                            graph (project sphere)]
                         (q/clear)
     ;; render axis
                         (if (true? axis?)
