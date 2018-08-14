@@ -6,23 +6,23 @@
 (defn zero [& args]
   0)
 
-(def framerate 60)
-(def speed 0.2) ; rpm
+(def framerate 30)
+(def speed 0.1) ; rpm
 
-(def radius (atom 1))
-(def inc-radius (atom true))
-(defn toggle [b]
-  (not b))
-(defn set-radius []
-  (if (> @radius 100)
-    (swap! inc-radius toggle)
-    (if (< @radius 1)
-      (swap! inc-radius toggle)))
-
-  (if (true? @inc-radius)
-    (swap! radius inc)
-    (swap! radius dec))
-  @radius)
+; (def radius (atom 1))
+; (def inc-radius (atom true))
+; (defn toggle [b]
+;   (not b))
+; (defn set-radius []
+;   (if (> @radius 100)
+;     (swap! inc-radius toggle)
+;     (if (< @radius 1)
+;       (swap! inc-radius toggle)))
+;
+;   (if (true? @inc-radius)
+;     (swap! radius inc)
+;     (swap! radius dec))
+;   @radius)
 
 (def axis? false)
 (def originX (/ (q/screen-width) 2))
@@ -61,8 +61,11 @@
 
 (defn point-cloud
   [a b c size mirror surface]
-  (let [rs (range (- 0 size) size 10)
-        matrix (for [x rs y rs] [x y])
+  (let [step (range (- 0 size) size 20)
+        cont (range (- 0 size) size 2)
+        xs cont
+        ys step
+        matrix (for [x xs y ys] [x y])
         ps (reduce into (map #(let [z (surface a b c %)]
                                 (if (true? mirror)
                                   [[(first %) (second %) z] [(* -1 (first %)) (* -1 (second %)) z]
@@ -152,11 +155,11 @@
                         (q/set-pixel originX originY (q/color 0 255 0)) ;; Draw a point at the center of the screen
                         (set-angle orient speed framerate)
 
-                        (doseq [[x y neg] graph]
-                          (q/set-pixel x y (if (true? neg) background foreground))
-                          (q/set-pixel (+ x 1) y (if (true? neg) background foreground))
-                          (q/set-pixel (+ x 1) (+ y 1) (if (true? neg) background foreground))
-                          (q/set-pixel x (+ y 1) (if (true? neg) background foreground)))))
+                        (time (doseq [[x y neg] graph]
+                                (q/set-pixel x y (if (true? neg) background foreground))
+                                (q/set-pixel (+ x 1) y (if (true? neg) background foreground))
+                                (q/set-pixel (+ x 1) (+ y 1) (if (true? neg) background foreground))
+                                (q/set-pixel x (+ y 1) (if (true? neg) background foreground))))))
 
 (q/defsketch quadric                 ;; Define a new sketch named example
              :title "Quadric Surfaces"    ;; Set the title of the sketch
