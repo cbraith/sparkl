@@ -24,15 +24,15 @@
     (swap! radius dec))
   @radius)
 
-(def axis? true)
+(def axis? false)
 (def originX (/ (q/screen-width) 2))
-(def originY (/ (q/screen-height) 2))
+(def originY (/ (q/screen-height) 1.2))
 (def xyz-length 128)
 (def sheet-size 300)
 
 ;; Angles
-(def Ax (atom (Math/toRadians 30)))
-(def Ay (atom (Math/toRadians -30)))
+(def Ax (atom (Math/toRadians 15)))
+(def Ay (atom (Math/toRadians -15)))
 (def Az (atom (Math/toRadians 270)))
 (def orient (atom (Math/toRadians 0)))
 
@@ -61,7 +61,7 @@
 
 (defn point-cloud
   [a b c size mirror surface]
-  (let [rs (range (- 0 size) size 8)
+  (let [rs (range (- 0 size) size 10)
         matrix (for [x rs y rs] [x y])
         ps (reduce into (map #(let [z (surface a b c %)]
                                 (if (true? mirror)
@@ -91,7 +91,7 @@
   "Project a collection of 3D points onto 2D screen."
   [points]
   (map #(let [[x y z] %]
-          [(screenH x y z @Ax @Ay @Az originX) (screenV x y z @Ax @Ay @Az originY) (< x 0)]) points))
+          [(screenH x y z @Ax @Ay @Az originX) (screenV x y z @Ax @Ay @Az originY) (> y 0)]) points))
 
 (defn setup []
   (q/frame-rate framerate)                    ;; Set framerate to 30 FPS
@@ -103,28 +103,36 @@
 
                             stardust (q/color 63 137 155)
                             persimmon (q/color 188 62 49)
+
                             grape (q/color 193 155 179)
                             potato-chip (q/color 195 185 163)
+
+                            ; good
                             wasabi (q/color 150 164 127)
                             nebula (q/color 75 70 67)
+
+                            ; good
                             snow-day (q/color 204 204 204)
                             umami (q/color 102 102 102)
+
                             fall-foliage (q/color 198 205 194)
                             sriracha (q/color 189 14 26)
-                            laughter (q/color 172 87 134)
+
+                            ; good
                             candlelight (q/color 206 174 71)
+                            laughter (q/color 172 87 134)
 
-                            foreground stardust
-                            background persimmon
+                            foreground wasabi
+                            background nebula
 
-                            sphere (point-cloud 300.0 300.0 300.0 sheet-size true s/ellipsoid)
+                            ; sphere (point-cloud 300.0 300.0 300.0 sheet-size true s/ellipsoid) ; screen-height / 2
 
-                            ; graph (project (point-cloud 10 10 1 sheet-size false s/paraboloid))]
-                            ; graph (project (point-cloud 13 13 13 sheet-size false s/saddle))]
-                            ; graph (project (point-cloud 6 6 5 sheet-size true s/cone))]
-                            ; graph (project (point-cloud 6 6 5 sheet-size true s/one-sheet))]
-        ; graph (project (point-cloud 6 6 5 sheet-size true s/two-sheet))]
-                            graph (project sphere)]
+                            graph (project (point-cloud 15.0 15.0 1 sheet-size false s/paraboloid))] ; screen-height / 1.2
+                            ; graph (project (point-cloud 6 6 9 sheet-size false s/saddle))]
+                            ; graph (project (point-cloud 6 6 9 sheet-size true s/cone))] ; screen-height / 2
+                            ; graph (project (point-cloud 6 6 10 sheet-size true s/one-sheet))] ; screen-height / 2
+                            ; graph (project (point-cloud 6 6 9 sheet-size true s/two-sheet))]
+                            ; graph (project sphere)]
                         (q/clear)
     ;; render axis
                         (if (true? axis?)
@@ -141,10 +149,14 @@
                             (q/line (screenH 0 0 0 @Ax @Ay @Az originX) (screenV 0 0 0 @Ax @Ay @Az originY)
                                     (screenH 0 0 xyz-length @Ax @Ay @Az originX) (screenV 0 0 xyz-length @Ax @Ay @Az originY)))) ; z-axis
 
-                        (q/set-pixel originX originY (q/color 0 255 0))
+                        (q/set-pixel originX originY (q/color 0 255 0)) ;; Draw a point at the center of the screen
                         (set-angle orient speed framerate)
+
                         (doseq [[x y neg] graph]
-                          (q/set-pixel x y (if (true? neg) background foreground)))))         ;; Draw a point at the center of the screen
+                          (q/set-pixel x y (if (true? neg) background foreground))
+                          (q/set-pixel (+ x 1) y (if (true? neg) background foreground))
+                          (q/set-pixel (+ x 1) (+ y 1) (if (true? neg) background foreground))
+                          (q/set-pixel x (+ y 1) (if (true? neg) background foreground)))))
 
 (q/defsketch quadric                 ;; Define a new sketch named example
              :title "Quadric Surfaces"    ;; Set the title of the sketch
