@@ -30,3 +30,20 @@
 (defn ellipsoid [a b c [x y]]
   "Define an ellipsoid."
   (Math/sqrt (* (sqr c) (- 1.0 (+ (/ (sqr x) (sqr a)) (/ (sqr y) (sqr b)))))))
+
+(defn circle
+  [x y z r]
+    ;; draw a circle
+    ;; TODO: parametize z, right now z is 0
+  (let [rs (range 0 (+ r 1) 20)
+        xs (reduce into (map #(let [delta (Math/round (Math/sqrt (- (Math/pow r 2) (Math/pow % 2))))]
+                                [[(+ x %) (+ y delta) 0]
+                                 [(+ x %) (- y delta) 0]
+                                 [(- x %) (+ y delta) 0]
+                                 [(- x %) (- y delta) 0]]) rs))
+        ys (reduce into (map #(let [delta (Math/round (Math/sqrt (- (Math/pow r 2) (Math/pow % 2))))]
+                                [[(+ x delta) (+ y %) 0]
+                                 [(+ x delta) (- y %) 0]
+                                 [(- x delta) (+ y %) 0]
+                                 [(- x delta) (- y %) 0]]) rs))]
+    (set (reduce into [xs ys]))))
