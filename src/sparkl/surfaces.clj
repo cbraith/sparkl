@@ -8,7 +8,7 @@
   (* n n))
 
 (defn paraboloid [a b c [x y]]
-  "Reder a parabaloid."
+  "Define a parabaloid."
   (/ (+ (/ (sqr x) (sqr a)) (/ (sqr y) (sqr b))) c))
 
 (defn saddle [a b c [x y]]

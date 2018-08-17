@@ -1,24 +1,27 @@
 (ns sparkl.quadric
   (:require [quil.core :as q]
-            [sparkl.surfaces :as s]))
+            [sparkl.surfaces :as s]
+            [sparkl.styling :as lnf]))
 
 (defn zero [& args]
   0)
 
-(def framerate 30)
-(def speed 0.1)
+(def framerate 60)
+(def speed 10)
+(def counter (atom 0))
+(def frame-count 600)
 
 (def axis? false)
-(def originX (/ (q/screen-width) 2))
-(def originY (/ (q/screen-height) 1.2))
+(def originX (/ (q/screen-width) 2)) ; 1.35 right half of screen
+(def originY (/ (q/screen-height) 2))
 (def xyz-length 128)
 (def sheet-size 300)
 
 ;; Angles
-(def Ax (atom (Math/toRadians 15)))
-(def Ay (atom (Math/toRadians -15)))
+(def Ax (atom (Math/toRadians 30)))
+(def Ay (atom (Math/toRadians -30)))
 (def Az (atom (Math/toRadians 270)))
-(def orient (atom (Math/toRadians 135)))
+(def orient (atom (Math/toRadians 0)))
 
 (defn copy-sign [val provider]
   "Return val with sign of provider"
@@ -27,8 +30,8 @@
 (defn set-angle
   "Rotates virtual space along y axis if true at given rpm per framrate."
   [angle rpm framerate]
-  (if (< @angle 400.0)
-    (swap! angle + (/ (/ (* rpm 400.0) 60) framerate))
+  (if (< @angle (* 4 (Math/PI)))
+    (swap! angle + (/ (/ (* rpm (Math/PI)) 60) framerate))
     (swap! angle zero)))
 
 (defn screenH [x y z ax ay az h0]
@@ -46,7 +49,7 @@
 (defn point-cloud
   [a b c size mirror surface]
   (let [step (range (- 0 size) size 20)
-        cont (range (- 0 size) size 2)
+        cont (range (- 0 size) size)
         xs cont
         ys step
         matrix (for [x xs y ys] [x y])
@@ -67,63 +70,66 @@
   (q/frame-rate framerate)                    ;; Set framerate to 30 FPS
   (q/background 255 255 255))
 
+;; colors
+; white
+; black
+
+; stardust
+; persimmon
+
+; grape
+; potato-chip
+
+; wasabi
+; nebula
+
+; snow-day
+; umami
+
+; fall-foliage
+; sriracha
+
+; laughter
+; candlelight
+
+
 (defn draw []
-  (q/stroke-weight 1) (let [white (q/color 255 255 255)
-                            black (q/color 0 0 0)
+  (q/stroke-weight 1) (let [foreground (apply q/color lnf/wasabi)
+                            background (apply q/color lnf/nebula)
 
-                            stardust (q/color 63 137 155)
-                            persimmon (q/color 188 62 49)
-
-                            grape (q/color 193 155 179)
-                            potato-chip (q/color 195 185 163)
-
-                            ; good
-                            wasabi (q/color 150 164 127)
-                            nebula (q/color 75 70 67)
-
-                            ; good
-                            snow-day (q/color 204 204 204)
-                            umami (q/color 102 102 102)
-
-                            fall-foliage (q/color 198 205 194)
-                            sriracha (q/color 189 14 26)
-
-                            ; good
-                            candlelight (q/color 206 174 71)
-                            laughter (q/color 172 87 134)
-
-                            foreground snow-day
-                            background umami
-
-                            ; sphere (point-cloud 300.0 300.0 300.0 sheet-size true s/ellipsoid) ; screen-height / 2
-
-                            graph (project (point-cloud 15.0 15.0 1 sheet-size false s/paraboloid))] ; screen-height / 1.2
+                            ; graph (project (point-cloud 15.0 15.0 1 sheet-size false s/paraboloid))] ; screen-height / 1.2
                             ; graph (project (point-cloud 6 6 9 sheet-size false s/saddle))]
-                            ; graph (project (point-cloud 6 6 9 sheet-size true s/cone))] ; screen-height / 2
+                            graph (project (point-cloud 6 6 9 sheet-size true s/cone))] ; screen-height / 2
                             ; graph (project (point-cloud 6 6 10 sheet-size true s/one-sheet))] ; screen-height / 2
                             ; graph (project (point-cloud 6 6 9 sheet-size true s/two-sheet))]
-                            ; graph (project sphere)]
+                            ; graph (project (point-cloud 300.0 300.0 300.0 sheet-size true s/ellipsoid))]
                         (q/clear)
-    ;; render axis
+
+                        ;; render axes
                         (if (true? axis?)
                           (do
-                            (q/stroke snow-day)
+                            (q/stroke (apply q/color lnf/snow-day))
                             (q/line (screenH 0 0 0 @Ax @Ay @Az originX) (screenV 0 0 0 @Ax @Ay @Az originY)
                                     (screenH xyz-length 0 0 @Ax @Ay @Az originX) (screenV xyz-length 0 0 @Ax @Ay @Az originY)) ; x-axis
 
-                            (q/stroke umami)
+                            (q/stroke (apply q/color lnf/umami))
                             (q/line (screenH 0 0 0 @Ax @Ay @Az originX) (screenV 0 0 0 @Ax @Ay @Az originY)
                                     (screenH 0 xyz-length 0 @Ax @Ay @Az originX) (screenV 0 xyz-length 0 @Ax @Ay @Az originY)) ; y-axis
 
-                            (q/stroke fall-foliage)
+                            (q/stroke (apply q/color lnf/fall-foliage))
                             (q/line (screenH 0 0 0 @Ax @Ay @Az originX) (screenV 0 0 0 @Ax @Ay @Az originY)
                                     (screenH 0 0 xyz-length @Ax @Ay @Az originX) (screenV 0 0 xyz-length @Ax @Ay @Az originY)))) ; z-axis
 
                         (q/set-pixel originX originY (q/color 0 255 0)) ;; Draw a point at the center of the screen
-                        (set-angle orient speed framerate)
 
                         (doseq [[x y neg] graph]
                           (q/set-pixel x y (if (true? neg) background foreground))
                           (q/set-pixel (+ x 1) y (if (true? neg) background foreground))
                           (q/set-pixel (+ x 1) (+ y 1) (if (true? neg) background foreground))
-                          (q/set-pixel x (+ y 1) (if (true? neg) background foreground)))))
+                          (q/set-pixel x (+ y 1) (if (true? neg) background foreground)))
+
+                        (if (< @counter frame-count)
+                          (do
+                            (swap! counter inc)
+                            (set-angle orient speed framerate)
+                            (q/save (str "resources/cone-" @counter ".png"))))))

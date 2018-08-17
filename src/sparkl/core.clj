@@ -9,6 +9,7 @@
              :setup quadric/setup                        ;; Specify the setup fn
              :draw quadric/draw                          ;; Specify the draw fn
              :features [:present]
+             :renderer :p2d
              :size :fullscreen)
 
 (defn -main
