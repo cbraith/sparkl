@@ -1,9 +1,12 @@
-:grid-y;; ============================================================================
+;; ============================================================================
 ;; Quadric Surfaces
 ;; ============================================================================
 (ns sparkl.surfaces
   (:require [quil.core :as q]
             [sparkl.styling :as lnf]))
+
+(def screen-center 2)
+(def screen-right 1.35)
 
 (defn sqr [n]
   "Return square of the provided number."
@@ -15,7 +18,7 @@
 
 (defn saddle [a b c [x y]]
   "Define a hyperbolic parabaloid."
-  (/ (- (/ (sqr x) (sqr b)) (/ (sqr y) (sqr a))) c))
+  (- (/ (sqr x) (sqr b)) (/ (sqr y) (sqr a))))
 
 (defn cone [a b c [x y]]
   "Define a cone."
@@ -23,7 +26,7 @@
 
 (defn one-sheet [a b c [x y]]
   "Define a hyperboloid of one sheet."
-  (Math/sqrt (* (sqr c) (- (+ (/ (sqr x) (sqr a)) (/ (sqr y) (sqr b))) 1.0))))
+  (Math/sqrt (* (sqr c) (+ (/ (sqr x) (sqr a)) (/ (sqr y) (sqr b)) 1.0))))
 
 (defn two-sheet [a b c [x y]]
   "Define a hyperboloid of two sheets."
@@ -33,8 +36,9 @@
   "Define an ellipsoid."
   (Math/sqrt (* (sqr c) (- 1.0 (+ (/ (sqr x) (sqr a)) (/ (sqr y) (sqr b)))))))
 
-(defn circle
-  [x y r]
+(defn circle [x y r]
+  "Define a circle."
+
     ;; draw a circle
     ;; TODO: parametize z, right now z is 0
   (let [rs (range 0 (+ r 1) 20)
@@ -50,58 +54,68 @@
                                  [(- x delta) (- y %) 0]]) rs))]
     (set (reduce into [xs ys]))))
 
-; 1.35 right half of screen
 (def settings {:paraboloid {:function paraboloid
-                            :origin [(/ (q/screen-width) 1.35) (/ (q/screen-height) 1.2)]
+                            :origin [(/ (q/screen-width) screen-center) (/ (q/screen-height) 1.2)]
                             :angles [15 -15 270]
                             :constants [15.0 15.0 1.0]
-                            :grid-x 12
-                            :grid-y 4
+                            :grid-x 4
+                            :grid-y 20
                             :mirror false
                             :fore-color lnf/persimmon
                             :aft-color lnf/sriracha
                             :animated true}
 
                :saddle      {:function saddle
-                             :origin [(/ (q/screen-width) 1.35) (/ (q/screen-height) 3)]
+                             :origin [(/ (q/screen-width) screen-center) (/ (q/screen-height) 3)]
                              :angles [0 0 270]
-                             :constants [4.0 8.0 4.0]
-                             :grid-x 20
-                             :grid-y 2
+                             :constants [2.1 18.0 8.0]
+                             :grid-x 40
+                             :grid-y 1
                              :mirror false
                              :fore-color lnf/snow-day
                              :aft-color lnf/umami
                              :animated false}
 
                :cone        {:function cone
-                             :origin [(/ (q/screen-width) 1.35) (/ (q/screen-height) 2)]
+                             :origin [(/ (q/screen-width) screen-center) (/ (q/screen-height) 2)]
                              :angles [15 -15 270]
                              :constants [6.0 6.0 9.0]
                              :grid-x 20
                              :grid-y 4
                              :mirror true
                              :fore-color lnf/wasabi
-                             :aft-color lnf/nebula
+                             :aft-color lnf/umami
                              :animated true}
 
+               :one-sheet    {:function one-sheet
+                              :origin [(/ (q/screen-width) screen-center) (/ (q/screen-height) 2)]
+                              :angles [15 -15 270] ; [110 -110 180]
+                              :constants [60 60 60.0]
+                              :grid-x 40
+                              :grid-y 2
+                              :mirror true
+                              :fore-color lnf/stardust
+                              :aft-color lnf/persimmon
+                              :animated true}
+
                :two-sheet    {:function two-sheet
-                              :origin [(/ (q/screen-width) 1.35) (/ (q/screen-height) 2)]
+                              :origin [(/ (q/screen-width) screen-center) (/ (q/screen-height) 2)]
                               :angles [10 -10 270]
                               :constants [7.0 7.0 7.0]
                               :grid-x 24
-                              :grid-y 4
+                              :grid-y 1
                               :mirror true
                               :fore-color lnf/laughter
                               :aft-color lnf/persimmon
                               :animated false}
 
                :ellipsoid    {:function ellipsoid
-                              :origin [(/ (q/screen-width) 1.35) (/ (q/screen-height) 2)]
+                              :origin [(/ (q/screen-width) screen-center) (/ (q/screen-height) 2)]
                               :angles [30 -30 270]
                               :constants [300.0 300.0 300.0]
-                              :grid-x 2
-                              :grid-y 40
+                              :grid-x 40
+                              :grid-y 2
                               :mirror true
-                              :fore-color lnf/grape
-                              :aft-color lnf/laughter
+                              :fore-color lnf/potato-chip
+                              :aft-color lnf/wasabi
                               :animated true}})
