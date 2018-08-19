@@ -131,6 +131,6 @@
                             (do
                               (swap! counter inc)
                               (set-angle orient speed framerate)
-                              (q/save (str "resources/cone-" @counter ".png"))))
+                              (q/save (str "resources/seq3-" @counter ".png"))))
                           (if (:animated config)
                             (set-angle orient speed framerate)))))

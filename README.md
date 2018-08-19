@@ -4,6 +4,9 @@ This project is inspired by "Graphing Quadric Surfaces: Methods of simulating 3-
 
 I've had this article on 3D graphics sitting in my drawer for over 30 years. While looking for something to cut my teeth on in Clojure I decided to give it a go. This will be updated periodically as I discover better ways to write Clojure as well as add new surfaces and rendering options.
 
+[![Graphing Quadric Surfaces with Clojure](http://img.youtube.com/vi/jEnbVVxLk_I/0.jpg)](http://www.youtube.com/watch?v=jEnbVVxLk_I)
+
+
 
 ## Introduction
 Quadric surfaces are graphs of 2nd-degree equations in three variables (x, y, z). The surfaces I've graphed are:

@@ -116,6 +116,6 @@
                               :grid-x 40
                               :grid-y 2
                               :mirror true
-                              :fore-color lnf/potato-chip
-                              :aft-color lnf/wasabi
+                              :fore-color lnf/snow-day
+                              :aft-color lnf/umami
                               :animated true}})
