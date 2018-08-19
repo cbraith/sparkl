@@ -1,10 +1,10 @@
 # sparkl
 
-Graph various quadratic surfaces.
+Graphic adventures in Clojure.
 
 ## Installation
 
-
+Not yet.
 
 ## Usage
 
@@ -12,7 +12,7 @@ Coming soon.
 
 ## Options
 
-
+Coming soon.
 
 ## Examples
 
@@ -20,7 +20,6 @@ TBD
 
 ## License
 
-Copyright © 2018 FIXME
+Copyright © 2018 Chris Braithwaite
 
-Distributed under the Eclipse Public License either version 1.0 or (at
-your option) any later version.
+Distributed under the MIT Public License.
