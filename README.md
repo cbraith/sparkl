@@ -1,4 +1,4 @@
-# sparkl -  Animating Quadric Surfaces in Clojure
+# Animating Quadric Surfaces in Clojure
 
 This project is inspired by "Graphing Quadric Surfaces: Methods of simulating 3-D graphics on a color display in BASIC" by George Haroney in the December 1986 issue of BYTE.
 
