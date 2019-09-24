@@ -1,7 +1,7 @@
 (ns sparkl.quadric
   (:require [quil.core :as q]
             [sparkl.surfaces :as s]
-            [sparkl.styling :as lnf]))
+            [sparkl.styling :as hue]))
 
 ;; surfaces
 ;; ====================================
@@ -13,11 +13,11 @@
 (def config (:paraboloid s/settings))
 
 ;; graph options
-(def framerate 60)                          ; if animation is too choppy try reducing this to 30 or 18.
-(def speed 2)                               ; rpm
+(def framerate 30)                          ; if animation is too choppy try reducing this to 30 or 18.
+(def speed 1)                               ; rpm
 (def rotation (* 2 (Math/PI)))              ; hacky way to define a single rotation
-(def frame-count 600)                       ; the number of frames to render for a video
-(def axis? false)                           ; set to true to render xyz axes
+(def frame-count 300)                       ; the number of frames to render for a video
+(def axis? true)                           ; set to true to render xyz axes
 (def xyz-length 128)                        ; length of the axes
 (def sheet-size 300)                        ; set range from +/- for xy values
 (def render-frames false)                   ; set to true to write frames to disk for a video
@@ -101,24 +101,24 @@
                                             (:mirror config)
                                             (:function config)))]
                         (q/clear)
-                        (q/background (apply q/color lnf/wisdom))
+                        (q/background (apply q/color hue/wisdom))
 
                         ;; render axes
                         (if (true? axis?)
                           (do
-                            (q/stroke (apply q/color lnf/snow-day))
+                            (q/stroke (apply q/color hue/snow-day))
                             (q/line (screen-h 0 0 0 @Ax @Ay @Az origin-h) (screen-v 0 0 0 @Ax @Ay @Az origin-v)
                                     (screen-h xyz-length 0 0 @Ax @Ay @Az origin-h) (screen-v xyz-length 0 0 @Ax @Ay @Az origin-v)) ; x-axis
 
-                            (q/stroke (apply q/color lnf/umami))
+                            (q/stroke (apply q/color hue/umami))
                             (q/line (screen-h 0 0 0 @Ax @Ay @Az origin-h) (screen-v 0 0 0 @Ax @Ay @Az origin-v)
                                     (screen-h 0 xyz-length 0 @Ax @Ay @Az origin-h) (screen-v 0 xyz-length 0 @Ax @Ay @Az origin-v)) ; y-axis
 
-                            (q/stroke (apply q/color lnf/fall-foliage))
+                            (q/stroke (apply q/color hue/fall-foliage))
                             (q/line (screen-h 0 0 0 @Ax @Ay @Az origin-h) (screen-v 0 0 0 @Ax @Ay @Az origin-v)
                                     (screen-h 0 0 xyz-length @Ax @Ay @Az origin-h) (screen-v 0 0 xyz-length @Ax @Ay @Az origin-v)))) ; z-axis
 
-                        (q/set-pixel origin-h origin-v (apply q/color lnf/green)) ;; Draw a point at the center of the screen
+                        (q/set-pixel origin-h origin-v (apply q/color hue/green)) ;; Draw a point at the center of the screen
 
                         (doseq [[x y neg] graph]
                           (q/set-pixel x y (if (true? neg) background foreground))
@@ -131,6 +131,6 @@
                             (do
                               (swap! counter inc)
                               (set-angle orient speed framerate)
-                              (q/save (str "resources/seq3-" @counter ".png"))))
+                              (q/save (str "resources/seq4-" @counter ".png"))))
                           (if (:animated config)
                             (set-angle orient speed framerate)))))

@@ -6,7 +6,7 @@
             [sparkl.styling :as lnf]))
 
 (def screen-center 2)
-(def screen-right 1.35)
+(def screen-right 2)
 
 (defn sqr [n]
   "Return square of the provided number."
@@ -55,7 +55,7 @@
     (set (reduce into [xs ys]))))
 
 (def settings {:paraboloid {:function paraboloid
-                            :origin [(/ (q/screen-width) screen-center) (/ (q/screen-height) 1.2)]
+                            :origin [(/ (q/screen-width) screen-right) (/ (q/screen-height) 1.25)]
                             :angles [15 -15 270]
                             :constants [15.0 15.0 1.0]
                             :grid-x 4
@@ -66,33 +66,33 @@
                             :animated true}
 
                :saddle      {:function saddle
-                             :origin [(/ (q/screen-width) screen-center) (/ (q/screen-height) 3)]
+                             :origin [(/ (q/screen-width) screen-right) (/ (q/screen-height) 3)]
                              :angles [0 0 270]
                              :constants [2.1 18.0 8.0]
-                             :grid-x 40
-                             :grid-y 1
+                             :grid-x 2
+                             :grid-y 40
                              :mirror false
                              :fore-color lnf/snow-day
                              :aft-color lnf/umami
-                             :animated false}
+                             :animated true}
 
                :cone        {:function cone
-                             :origin [(/ (q/screen-width) screen-center) (/ (q/screen-height) 2)]
+                             :origin [(/ (q/screen-width) screen-right) (/ (q/screen-height) 2)]
                              :angles [15 -15 270]
-                             :constants [6.0 6.0 9.0]
-                             :grid-x 20
-                             :grid-y 4
+                             :constants [8.0 8.0 9.0]
+                             :grid-x 4
+                             :grid-y 40 ;4
                              :mirror true
                              :fore-color lnf/wasabi
                              :aft-color lnf/umami
                              :animated true}
 
                :one-sheet    {:function one-sheet
-                              :origin [(/ (q/screen-width) screen-center) (/ (q/screen-height) 2)]
+                              :origin [(/ (q/screen-width) screen-right) (/ (q/screen-height) 2)]
                               :angles [15 -15 270] ; [110 -110 180]
                               :constants [60 60 60.0]
-                              :grid-x 40
-                              :grid-y 2
+                              :grid-x 40 ; 40
+                              :grid-y 4
                               :mirror true
                               :fore-color lnf/stardust
                               :aft-color lnf/persimmon
@@ -110,11 +110,11 @@
                               :animated false}
 
                :ellipsoid    {:function ellipsoid
-                              :origin [(/ (q/screen-width) screen-center) (/ (q/screen-height) 2)]
+                              :origin [(/ (q/screen-width) screen-right) (/ (q/screen-height) 2)]
                               :angles [30 -30 270]
                               :constants [300.0 300.0 300.0]
-                              :grid-x 40
-                              :grid-y 2
+                              :grid-x 2 ; 2
+                              :grid-y 40 ;40
                               :mirror true
                               :fore-color lnf/snow-day
                               :aft-color lnf/umami
