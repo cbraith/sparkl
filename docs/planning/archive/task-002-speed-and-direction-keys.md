@@ -1,6 +1,6 @@
 # Task 002: Speed and direction keys
 
-**Status:** Active. Built, awaiting Chris's on-screen check
+**Status:** Done (2026-10-03). Merged to `master` as `071eb1e`. Checked on screen by Chris, tab included
 **Tier:** 2
 **Owner:** Chris
 **Branch:** `feat/task-002-speed-and-direction-keys`

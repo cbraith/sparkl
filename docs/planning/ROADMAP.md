@@ -8,7 +8,7 @@
 
 sparkl runs again (task 000, 2026-10-03). It uses current Clojure and Quil, renders all six surfaces, and switches surfaces, pauses and toggles axes from the keyboard.
 
-**Now:** task 002, keyboard control of rotation speed and direction. Task 001 (time-based rotation, true rpm) is done.
+**Now:** nothing active. Tasks 001 (time-based rotation) and 002 (speed and direction keys) are done. Pick the next task from the backlog.
 
 ---
 
@@ -18,7 +18,7 @@ sparkl runs again (task 000, 2026-10-03). It uses current Clojure and Quil, rend
 |---|---|---|---|
 | 000 | Revival | ✅ Done | Clojure 1.12 / Quil 4.3, keyboard controls, HUD. [archive](archive/task-000-revival.md) |
 | 001 | Time-based animation | ✅ Done | Rotation speed independent of frame rate; true `rpm`; deterministic video frames. [archive](archive/task-001-time-based-animation.md) |
-| 002 | Speed and direction keys | ▶ **Built, awaiting check** | `↑`/`↓` change rpm by 1 (shift: 10), `tab` reverses. [active](active/task-002-speed-and-direction-keys.md) |
+| 002 | Speed and direction keys | ✅ Done | `↑`/`↓` change rpm by 1 (shift: 10), `tab` reverses. [archive](archive/task-002-speed-and-direction-keys.md) |
 
 ## Backlog
 
