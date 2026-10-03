@@ -1,7 +1,8 @@
 (ns sparkl.quadric-test
   ;; Require sparkl.quadric, never sparkl.core: loading core opens the sketch window.
   (:require [clojure.test :refer [deftest testing is]]
-            [sparkl.quadric :as quadric :refer [advance frame-step tau]]))
+            [sparkl.quadric :as quadric :refer [advance frame-step tau
+                                                adjust-rpm speed-delta max-rpm]]))
 
 (def eps 1e-9)
 
@@ -45,3 +46,32 @@
     (is (= 100 (frame-step 1000 6000 100))))
   (testing "a clock that goes backwards gives no step"
     (is (= 0 (frame-step 1000 900 100)))))
+
+(deftest advance-reverses
+  (testing "negative rpm turns backwards by the same amount"
+    (is (close? 0 (advance (/ tau 4) 15000 -1)))
+    (is (close? (- tau 0.5) (advance 0 (/ (* 0.5 60000) (* tau 4)) -4)) "wraps below 0 into [0, tau)"))
+  (testing "the result stays within [0, tau)"
+    (let [a (advance 0.1 15000 -1)]
+      (is (<= 0 a))
+      (is (< a tau)))))
+
+(deftest adjust-rpm-steps-and-clamps
+  (is (= 60 max-rpm))
+  (is (= 5 (adjust-rpm 4 1)))
+  (is (= 3 (adjust-rpm 4 -1)))
+  (is (= 14 (adjust-rpm 4 10)))
+  (testing "never below 0"
+    (is (= 0 (adjust-rpm 3 -10)))
+    (is (= 0 (adjust-rpm 0 -1))))
+  (testing "never above max-rpm"
+    (is (= 60 (adjust-rpm 55 10)))
+    (is (= 60 (adjust-rpm 60 1)))))
+
+(deftest speed-delta-maps-keys
+  (is (= 1 (speed-delta :up false)))
+  (is (= -1 (speed-delta :down false)))
+  (is (= 10 (speed-delta :up true)))
+  (is (= -10 (speed-delta :down true)))
+  (is (nil? (speed-delta :left false)))
+  (is (nil? (speed-delta :space true))))

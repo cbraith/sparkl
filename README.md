@@ -46,11 +46,13 @@ Surfaces are selected from the keyboard while the program is running:
 | --- | --- |
 | `1` – `6` | paraboloid, saddle, cone, hyperboloid of one sheet, hyperboloid of two sheets, ellipsoid |
 | `←` / `→` | previous / next surface |
+| `↑` / `↓` | speed up / slow down by 1 rpm (hold `shift` for 10), from 0 to 60 rpm |
+| `tab` | reverse the direction of rotation |
 | `space` | pause / resume the rotation |
 | `a` | toggle the xyz axes |
 | `esc` | quit |
 
-The surface shown at startup is set by *current-surface* in quadric.clj. The rotation speed (*rpm*, in revolutions per minute), framerate and xy range may be set from this file. Rotation is based on elapsed time, so the speed stays the same whatever frame rate your machine achieves; *framerate* only affects smoothness.
+The surface shown at startup is set by *current-surface* in quadric.clj. The starting rotation speed (*start-rpm*, in revolutions per minute), framerate and xy range may be set from this file. Rotation is based on elapsed time, so the speed stays the same whatever frame rate your machine achieves; *framerate* only affects smoothness.
 
 To adjust how each surface is rendered play around with the values in surfaces.clj. Grid spacing, xyz axis angles, rendering colors and more can be controlled here.
 
@@ -60,7 +62,7 @@ To adjust how each surface is rendered play around with the values in surfaces.c
 There are a number of things I'd like to add, these are listed below:
 
 1. Stitch together rendered frames into a video.
-2. Provide UI for modifying rendering values, such as the rotation speed (surfaces can now be selected from the keyboard).
+2. Provide UI for modifying rendering values (surfaces, speed and direction can now be changed from the keyboard).
 3. Improve overall rendering performance (Quil may be overkill for my needs).
 4. Link axes rendering to complete 3D illusion.
 5. Add more complex surfaces.

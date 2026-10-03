@@ -12,6 +12,8 @@
 ;;   4 one-sheet    5 two-sheet   6 ellipsoid
 ;;
 ;;   left/right arrows cycle through the surfaces
+;;   up/down arrows   change the speed by 1 rpm (hold shift for 10)
+;;   tab              reverses the direction of rotation
 ;;   space            pauses / resumes the rotation
 ;;   a                toggles the xyz axes
 ;;   esc              quits
@@ -28,7 +30,8 @@
 
 ;; graph options
 (def framerate 30)                          ; target frames per second; affects smoothness, not rotation speed
-(def rpm 4)                                 ; rotation speed in revolutions per minute (4 = one turn every 15 s)
+(def start-rpm 4)                           ; starting speed in revolutions per minute (4 = one turn every 15 s)
+(def max-rpm 60)                            ; fastest speed the keys allow; beyond this the point cloud strobes
 (def tau (* 2 Math/PI))                     ; one full revolution, in radians
 (def max-step-ms 100)                       ; the longest time step a single frame may advance
 (def frame-count 300)                       ; the number of frames to render for a video (spaced 1/framerate s apart)
@@ -41,6 +44,8 @@
 (def animated? (atom (:animated (config)))) ; rotate the point cloud each frame
 (def counter (atom 0))
 (def orient (atom (Math/toRadians 150)))
+(def rpm (atom start-rpm))                  ; speed in revolutions per minute, 0 to max-rpm
+(def direction (atom 1))                    ; 1 forward, -1 reversed
 (def last-millis (atom nil))                ; clock reading at the previous frame
 
 (defn copy-sign [val provider]
@@ -52,6 +57,18 @@
    milliseconds, wrapped into [0, tau)."
   [angle dt-ms rpm]
   (mod (+ angle (* tau rpm (/ dt-ms 60000.0))) tau))
+
+(defn adjust-rpm
+  "Return rpm changed by delta, kept within 0 to max-rpm."
+  [rpm delta]
+  (-> (+ rpm delta) (max 0) (min max-rpm)))
+
+(defn speed-delta
+  "Return the rpm step for key k (:up or :down), 10 times larger with shift,
+   or nil for any other key."
+  [k shift?]
+  (when-let [step ({:up 1 :down -1} k)]
+    (if shift? (* 10 step) step)))
 
 (defn frame-step
   "Return the milliseconds elapsed from prev-ms to now-ms, at most cap-ms.
@@ -119,11 +136,16 @@
     (select-surface! (nth surface-order (mod (+ i delta) n)))))
 
 (defn key-pressed
-  "Handle a key press: 1-6 and the arrow keys select surfaces, space pauses, a toggles axes."
+  "Handle a key press: 1-6 and left/right select surfaces, up/down change the
+   speed (shift for 10), tab reverses, space pauses, a toggles axes."
   []
-  (let [k (q/key-as-keyword)]
+  (let [k (q/key-as-keyword)
+        step (speed-delta k (contains? (q/key-modifiers) :shift))]
     (cond
       (contains? surface-keys k) (select-surface! (surface-keys k))
+      step                       (swap! rpm adjust-rpm step)
+      ;; Quil has no keyword for tab, so match the raw character
+      (= (q/raw-key) \tab)       (swap! direction -)
       (= k :left)                (step-surface! -1)
       (= k :right)               (step-surface! 1)
       (= k :space)               (swap! animated? not)
@@ -152,8 +174,11 @@
   (q/fill (apply q/color hue/snow-day))
   (q/text-size 14)
   (q/text (str (name @current-surface)
+               "   " @rpm " rpm"
+               (if (neg? @direction) " reversed" "")
                (if @animated? "" "  (paused)")
-               "      1-6 / arrows: surface   space: pause   a: axes   esc: quit")
+               "      1-6 / left-right: surface   up-down: speed (shift x10)   tab: reverse"
+               "   space: pause   a: axes   esc: quit")
           20 30))
 
 (defn draw []
@@ -189,7 +214,7 @@
       (if (< @counter frame-count)
         (do
           (swap! counter inc)
-          (swap! orient advance (/ 1000.0 framerate) rpm)
+          (swap! orient advance (/ 1000.0 framerate) (* @direction @rpm))
           (q/save (str "resources/seq4-" @counter ".png"))))
       ;; live: advance by the time since the last frame. The clock is read even
       ;; while paused, so resuming doesn't jump ahead by the length of the pause.
@@ -197,4 +222,4 @@
             dt (frame-step @last-millis now max-step-ms)]
         (reset! last-millis now)
         (when @animated?
-          (swap! orient advance dt rpm))))))
+          (swap! orient advance dt (* @direction @rpm)))))))

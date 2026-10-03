@@ -18,7 +18,7 @@ sparkl runs again (task 000, 2026-10-03). It uses current Clojure and Quil, rend
 |---|---|---|---|
 | 000 | Revival | ✅ Done | Clojure 1.12 / Quil 4.3, keyboard controls, HUD. [archive](archive/task-000-revival.md) |
 | 001 | Time-based animation | ✅ Done | Rotation speed independent of frame rate; true `rpm`; deterministic video frames. [archive](archive/task-001-time-based-animation.md) |
-| 002 | Speed and direction keys | ▶ **Now** | `↑`/`↓` change rpm by 1 (shift: 10), `tab` reverses. [active](active/task-002-speed-and-direction-keys.md) |
+| 002 | Speed and direction keys | ▶ **Built, awaiting check** | `↑`/`↓` change rpm by 1 (shift: 10), `tab` reverses. [active](active/task-002-speed-and-direction-keys.md) |
 
 ## Backlog
 
