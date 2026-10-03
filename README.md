@@ -26,7 +26,7 @@ These coordinates are then projected onto the screen by using the angles (Ax, Ay
 
 *v = x sinA<sub>x</sub> + y sinA<sub>y</sub> + z sinA<sub>z</sub> + v<sub>0</sub>*
 
-In order to animate the surface, the range of xy values used to generate the point cloud is rotated around the z-axis each frame.  A grid step for x and y is chosen for clarity and realtime performance.
+In order to animate the surface, the range of xy values used to generate the point cloud is rotated around the z-axis by an angle that advances with elapsed time.  A grid step for x and y is chosen for clarity and realtime performance.
 
 The code also contains a feature for rendering out frames that can be stitched together into a video.
 
@@ -50,7 +50,7 @@ Surfaces are selected from the keyboard while the program is running:
 | `a` | toggle the xyz axes |
 | `esc` | quit |
 
-The surface shown at startup is set by *current-surface* in quadric.clj. The rotation speed, framerate and xy range may be set from this file.
+The surface shown at startup is set by *current-surface* in quadric.clj. The rotation speed (*rpm*, in revolutions per minute), framerate and xy range may be set from this file. Rotation is based on elapsed time, so the speed stays the same whatever frame rate your machine achieves; *framerate* only affects smoothness.
 
 To adjust how each surface is rendered play around with the values in surfaces.clj. Grid spacing, xyz axis angles, rendering colors and more can be controlled here.
 
@@ -59,12 +59,11 @@ To adjust how each surface is rendered play around with the values in surfaces.c
 
 There are a number of things I'd like to add, these are listed below:
 
-1. Base rotation on time so the rotation speed will be independent of the frame rate.
-2. Stitch together rendered frames into a video.
-3. Provide UI for modifying rendering values (surfaces can now be selected from the keyboard).
-4. Improve overall rendering performance (Quil may be overkill for my needs).
-5. Link axes rendering to complete 3D illusion.
-6. Add more complex surfaces.
+1. Stitch together rendered frames into a video.
+2. Provide UI for modifying rendering values, such as the rotation speed (surfaces can now be selected from the keyboard).
+3. Improve overall rendering performance (Quil may be overkill for my needs).
+4. Link axes rendering to complete 3D illusion.
+5. Add more complex surfaces.
 
 
 ## License

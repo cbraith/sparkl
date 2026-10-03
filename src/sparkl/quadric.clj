@@ -27,10 +27,11 @@
   (get s/settings @current-surface))
 
 ;; graph options
-(def framerate 30)                          ; if animation is too choppy try reducing this to 30 or 18.
-(def speed 1)                               ; rpm
-(def rotation (* 2 (Math/PI)))              ; hacky way to define a single rotation
-(def frame-count 300)                       ; the number of frames to render for a video
+(def framerate 30)                          ; target frames per second; affects smoothness, not rotation speed
+(def rpm 4)                                 ; rotation speed in revolutions per minute (4 = one turn every 15 s)
+(def tau (* 2 Math/PI))                     ; one full revolution, in radians
+(def max-step-ms 100)                       ; the longest time step a single frame may advance
+(def frame-count 300)                       ; the number of frames to render for a video (spaced 1/framerate s apart)
 (def xyz-length 128)                        ; length of the axes
 (def sheet-size 300)                        ; set range from +/- for xy values
 (def render-frames false)                   ; set to true to write frames to disk for a video
@@ -40,19 +41,25 @@
 (def animated? (atom (:animated (config)))) ; rotate the point cloud each frame
 (def counter (atom 0))
 (def orient (atom (Math/toRadians 150)))
-
-(defn zero [& args]
-  0)
+(def last-millis (atom nil))                ; clock reading at the previous frame
 
 (defn copy-sign [val provider]
   "Return val with sign of provider"
   (* (/ provider (Math/abs provider) val)))
 
-(defn set-angle [angle rpm framerate]
-  "Rotates virtual space along y axis if true at given rpm per framrate."
-  (if (< @angle rotation)
-    (swap! angle + (/ (/ (* rpm rotation) 15) framerate))
-    (swap! angle zero)))
+(defn advance
+  "Return angle (radians) turned at rpm revolutions per minute for dt-ms
+   milliseconds, wrapped into [0, tau)."
+  [angle dt-ms rpm]
+  (mod (+ angle (* tau rpm (/ dt-ms 60000.0))) tau))
+
+(defn frame-step
+  "Return the milliseconds elapsed from prev-ms to now-ms, at most cap-ms.
+   Returns 0 when there is no previous reading or the clock went backwards."
+  [prev-ms now-ms cap-ms]
+  (if (nil? prev-ms)
+    0
+    (max 0 (min cap-ms (- now-ms prev-ms)))))
 
 (defn screen-h [x y z ax ay az h0]
   "Calculate the x projection from 3-space."
@@ -178,10 +185,16 @@
     (draw-hud)
 
     (if (true? render-frames)
+      ;; video: a fixed step per saved frame, however long saving takes
       (if (< @counter frame-count)
         (do
           (swap! counter inc)
-          (set-angle orient speed framerate)
+          (swap! orient advance (/ 1000.0 framerate) rpm)
           (q/save (str "resources/seq4-" @counter ".png"))))
-      (when @animated?
-        (set-angle orient speed framerate)))))
+      ;; live: advance by the time since the last frame. The clock is read even
+      ;; while paused, so resuming doesn't jump ahead by the length of the pause.
+      (let [now (q/millis)
+            dt (frame-step @last-millis now max-step-ms)]
+        (reset! last-millis now)
+        (when @animated?
+          (swap! orient advance dt rpm))))))

@@ -25,10 +25,11 @@ These come from the README's Future Work list. Numbers get assigned when a task 
 
 | Idea | Notes |
 |---|---|
+| Keyboard control for rpm | Speed up and slow down the rotation live. Builds on 001's `rpm` setting. |
 | Video from rendered frames | Stitch the PNG sequence into a video, for example with ffmpeg. Builds on 001's fixed-step render mode. |
 | UI for render values | Tweak constants, grid spacing and angles live, beyond selecting surfaces. |
 | Rendering performance | Profile first. Per-pixel `set-pixel` calls are the likely cost. Questions whether Quil is the right tool (Tier 3). |
 | Axes in the 3D illusion | Axes rotate and occlude along with the surface. |
 | More complex surfaces | New equations as data in `surfaces.clj`. |
-| Working test suite | Replace the template `core_test.clj` with real tests of the pure math. Task 001 may cover part of this. |
+| Wider test suite | 001 started `quadric_test.clj` (timing only). Projection, rotation and the surface functions are still untested. |
 | Clean up CHANGELOG | Replace the template placeholder, or delete it. |

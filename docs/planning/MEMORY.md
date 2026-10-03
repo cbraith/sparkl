@@ -4,13 +4,14 @@ Decisions and sharp edges, newest at the bottom of each section. No code dumps.
 
 ## Environment
 
-- **Loading `sparkl.core` opens the sketch.** `defsketch` runs when the namespace loads, not when `-main` is called. Tests and REPL sessions should require `sparkl.quadric` or `sparkl.surfaces`, never `sparkl.core`. The stock `test/sparkl/core_test.clj` from the Leiningen template does require it, and it asserts `(= 0 1)`. Replace it rather than trusting `lein test` as-is.
+- **Loading `sparkl.core` opens the sketch.** `defsketch` runs when the namespace loads, not when `-main` is called. Tests and REPL sessions should require `sparkl.quadric` or `sparkl.surfaces`, never `sparkl.core`. The stock template test that required it was deleted in task 001; tests live in `test/sparkl/quadric_test.clj`.
 - **Revived 2026-10-03** on Clojure 1.12.1 and Quil 4.3.1563 (from 1.8.0 and 2.7.1) with JDK 17+. See `archive/task-000-revival.md`.
 
 ## Rendering and animation
 
-- **`speed` is labelled rpm but isn't.** `set-angle` adds `rpm·2π / 15 / framerate` per frame, so `speed 1` is one revolution every 15 seconds at the target frame rate. The rotation also slows whenever the real frame rate falls behind the target. Task 001 addresses both.
-- **Video mode writes `resources/seq4-N.png`** for `frame-count` frames when `render-frames` is true. Frames there must stay evenly spaced in angle, whatever the wall clock does.
+- **Rotation is time-based (task 001).** `rpm` is true revolutions per minute; the default of 4 matches the pre-001 look (one turn every 15 s). Before 001, `speed 1` was labelled rpm but meant 4 rpm, and rotation slowed whenever the frame rate dropped.
+- **The angle accumulates per frame; it is not computed from time since start.** That's what makes pause free: the clock is read every frame, even while paused, and only the advance is skipped. Each frame's step is capped at `max-step-ms` (100), so a stall such as a window drag doesn't make the surface leap.
+- **Video mode writes `resources/seq4-N.png`** for `frame-count` frames when `render-frames` is true. Frames there must stay evenly spaced in angle, whatever the wall clock does, so video mode advances a fixed `1000 / framerate` ms per saved frame and never reads the clock.
 
 ## Housekeeping
 
