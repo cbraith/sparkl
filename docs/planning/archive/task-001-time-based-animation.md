@@ -1,6 +1,6 @@
 # Task 001: Time-based animation
 
-**Status:** Active. Built, awaiting Chris's on-screen check
+**Status:** Done (2026-10-03). Merged to `master` as `7c9a94d` and checked on screen by Chris
 **Tier:** 2
 **Owner:** Chris
 **Branch:** `feat/task-001-time-based-animation`

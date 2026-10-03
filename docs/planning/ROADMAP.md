@@ -8,7 +8,7 @@
 
 sparkl runs again (task 000, 2026-10-03). It uses current Clojure and Quil, renders all six surfaces, and switches surfaces, pauses and toggles axes from the keyboard.
 
-**Now:** task 001, making the rotation time-based instead of frame-based.
+**Now:** task 002, keyboard control of rotation speed and direction. Task 001 (time-based rotation, true rpm) is done.
 
 ---
 
@@ -17,7 +17,8 @@ sparkl runs again (task 000, 2026-10-03). It uses current Clojure and Quil, rend
 | # | Task | Status | One line |
 |---|---|---|---|
 | 000 | Revival | ✅ Done | Clojure 1.12 / Quil 4.3, keyboard controls, HUD. [archive](archive/task-000-revival.md) |
-| 001 | Time-based animation | ▶ **Now** | Rotation speed independent of frame rate; video frames stay deterministic. [active](active/task-001-time-based-animation.md) |
+| 001 | Time-based animation | ✅ Done | Rotation speed independent of frame rate; true `rpm`; deterministic video frames. [archive](archive/task-001-time-based-animation.md) |
+| 002 | Speed and direction keys | ▶ **Now** | `↑`/`↓` change rpm by 1 (shift: 10), `tab` reverses. [active](active/task-002-speed-and-direction-keys.md) |
 
 ## Backlog
 
@@ -25,7 +26,6 @@ These come from the README's Future Work list. Numbers get assigned when a task 
 
 | Idea | Notes |
 |---|---|
-| Keyboard control for rpm | Speed up and slow down the rotation live. Builds on 001's `rpm` setting. |
 | Video from rendered frames | Stitch the PNG sequence into a video, for example with ffmpeg. Builds on 001's fixed-step render mode. |
 | UI for render values | Tweak constants, grid spacing and angles live, beyond selecting surfaces. |
 | Rendering performance | Profile first. Per-pixel `set-pixel` calls are the likely cost. Questions whether Quil is the right tool (Tier 3). |
