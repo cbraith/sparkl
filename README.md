@@ -14,7 +14,7 @@ Quadric surfaces are graphs of 2nd-degree equations in three variables (x, y, z)
 - paraboloid
 - hyperbolic paraboloid (aka saddle)
 - cone
-- hyperboloid of one sheet\*
+- hyperboloid of one sheet
 - hyperboloid of two sheets
 - ellipsoid
 
@@ -30,19 +30,27 @@ In order to animate the surface, the range of xy values used to generate the poi
 
 The code also contains a feature for rendering out frames that can be stitched together into a video.
 
-\*I am still working on getting the hyperboloid of one sheet to render as expected.
-
 
 ## Installation
 
-The easiest way to run this code is with [Leiningen](https://leiningen.org/). Once Leiningen is installed, type `lein run` from application root to start the program. This program uses the [Quil](https://github.com/quil/quil) library (itself based on [Processing](https://processing.org/)) for rendering. It will install these dependencies on initial startup. The program will enter fullscreen mode and render the selected surface. Press escape to quit.
+The easiest way to run this code is with [Leiningen](https://leiningen.org/). Once Leiningen is installed (along with a JDK 17 or newer), type `lein run` from application root to start the program. This program uses the [Quil](https://github.com/quil/quil) library (itself based on [Processing](https://processing.org/)) for rendering. It will install these dependencies on initial startup. The program will enter fullscreen mode and render the selected surface. Press escape to quit.
 
 
 ## Usage
 
 There are four files, core.clj (basic app and screen settings), quadric.clj (renders the surfaces), styling.clj (contains color definitions) and surfaces.clj (contains surface equations and display settings for each surface).
 
-Select a surface to render by setting the value of *config* on line 13 of quadric.clj i.e `(def config (:one-sheet s/settings))` or `(def config (:cone s/settings))`. The rotation speed, framerate and xy range may be set from this file.
+Surfaces are selected from the keyboard while the program is running:
+
+| Key | Action |
+| --- | --- |
+| `1` – `6` | paraboloid, saddle, cone, hyperboloid of one sheet, hyperboloid of two sheets, ellipsoid |
+| `←` / `→` | previous / next surface |
+| `space` | pause / resume the rotation |
+| `a` | toggle the xyz axes |
+| `esc` | quit |
+
+The surface shown at startup is set by *current-surface* in quadric.clj. The rotation speed, framerate and xy range may be set from this file.
 
 To adjust how each surface is rendered play around with the values in surfaces.clj. Grid spacing, xyz axis angles, rendering colors and more can be controlled here.
 
@@ -53,11 +61,10 @@ There are a number of things I'd like to add, these are listed below:
 
 1. Base rotation on time so the rotation speed will be independent of the frame rate.
 2. Stitch together rendered frames into a video.
-3. Provide UI for selecting surfaces and modifying rendering values.
+3. Provide UI for modifying rendering values (surfaces can now be selected from the keyboard).
 4. Improve overall rendering performance (Quil may be overkill for my needs).
-5. Render one-sheet hyperboloid correctly.
-6. Link axes rendering to complete 3D illusion.
-7. Add more complex surfaces.
+5. Link axes rendering to complete 3D illusion.
+6. Add more complex surfaces.
 
 
 ## License

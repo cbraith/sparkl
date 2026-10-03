@@ -7,8 +7,11 @@
              :settings #(q/smooth 2)             ;; Turn on anti-aliasing
              :setup quadric/setup                        ;; Specify the setup fn
              :draw quadric/draw                          ;; Specify the draw fn
+             :key-pressed quadric/key-pressed            ;; Keyboard: 1-6/arrows select surface, space pauses, a toggles axes
              :features [:present]
              :renderer :p2d
              :size :fullscreen)
 
-(defn -main [& args] (println "Rendering..."))
+(defn -main [& args]
+  (println "Rendering...")
+  (println "Keys: 1-6 or left/right arrows select a surface, space pauses, a toggles axes, esc quits."))

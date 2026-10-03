@@ -25,12 +25,14 @@
   (Math/sqrt (* (sqr c) (+ (/ (sqr x) (sqr a)) (/ (sqr y) (sqr b))))))
 
 (defn one-sheet [a b c [x y]]
-  "Define a hyperboloid of one sheet."
-  (Math/sqrt (* (sqr c) (+ (/ (sqr x) (sqr a)) (/ (sqr y) (sqr b)) 1.0))))
+  "Define a hyperboloid of one sheet: x²/a² + y²/b² - z²/c² = 1.
+   Undefined (NaN) inside the waist, where x²/a² + y²/b² < 1."
+  (Math/sqrt (* (sqr c) (- (+ (/ (sqr x) (sqr a)) (/ (sqr y) (sqr b))) 1.0))))
 
 (defn two-sheet [a b c [x y]]
-  "Define a hyperboloid of two sheets."
-  (Math/sqrt (* (sqr c) (- (/ (sqr x) (sqr a)) (/ (sqr y) (sqr b)) 1.0))))
+  "Define a hyperboloid of two sheets: z²/c² - x²/a² - y²/b² = 1.
+   The two sheets open along the z-axis with vertices at z = ±c."
+  (Math/sqrt (* (sqr c) (+ (/ (sqr x) (sqr a)) (/ (sqr y) (sqr b)) 1.0))))
 
 (defn ellipsoid [a b c [x y]]
   "Define an ellipsoid."
@@ -66,9 +68,9 @@
                             :animated true}
 
                :saddle      {:function saddle
-                             :origin [(/ (q/screen-width) screen-right) (/ (q/screen-height) 3)]
-                             :angles [0 0 270]
-                             :constants [2.1 18.0 8.0]
+                             :origin [(/ (q/screen-width) screen-right) (/ (q/screen-height) 2)]
+                             :angles [15 -15 270] ; x and y must not share an angle or the rotation collapses into a 2D "breathing" profile
+                             :constants [20.0 20.0 1.0] ; z = x²/20² - y²/20², so z stays within ±225 across the sheet (c is unused)
                              :grid-x 2
                              :grid-y 40
                              :mirror false
@@ -90,7 +92,7 @@
                :one-sheet    {:function one-sheet
                               :origin [(/ (q/screen-width) screen-right) (/ (q/screen-height) 2)]
                               :angles [15 -15 270] ; [110 -110 180]
-                              :constants [60 60 60.0]
+                              :constants [60.0 60.0 60.0] ; waist radius 60, flares to z = ±294 at the sheet edge
                               :grid-x 40 ; 40
                               :grid-y 4
                               :mirror true
@@ -101,13 +103,13 @@
                :two-sheet    {:function two-sheet
                               :origin [(/ (q/screen-width) screen-center) (/ (q/screen-height) 2)]
                               :angles [10 -10 270]
-                              :constants [7.0 7.0 7.0]
-                              :grid-x 24
-                              :grid-y 1
+                              :constants [80.0 80.0 60.0] ; vertices at z = ±60, reaching z = ±233 at the sheet edge
+                              :grid-x 40
+                              :grid-y 4
                               :mirror true
                               :fore-color lnf/laughter
                               :aft-color lnf/persimmon
-                              :animated false}
+                              :animated true}
 
                :ellipsoid    {:function ellipsoid
                               :origin [(/ (q/screen-width) screen-right) (/ (q/screen-height) 2)]
